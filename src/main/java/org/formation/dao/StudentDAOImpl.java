@@ -18,7 +18,7 @@ public class StudentDAOImpl implements StudentDAO {
 	public Student findById(int id) {
 		try {
 			txn.begin();
-			Student s=em.find(Student.class, 1L);
+			Student s=em.find(Student.class, id);
 			System.out.println(s);
 			txn.commit();
 			
@@ -65,11 +65,25 @@ public class StudentDAOImpl implements StudentDAO {
 
 	@Override
 	public void update(Student s) {
-//		txn.begin();
-//		Student s=em.find(Student.class, s.getId());
-//		System.out.println(s);
-//	
-//		txn.commit();
+		try {
+			txn.begin();
+			em.merge(s);
+			txn.commit();
+			
+		}catch(Exception e) {
+			if(txn!=null) {
+				txn.rollback();
+			}
+			e.printStackTrace();
+			
+		}finally {
+			if(em!=null) {
+				em.close();
+			}
+			if(emf!=null) {
+				emf.close();
+			}
+		}
 		
 	}
 
